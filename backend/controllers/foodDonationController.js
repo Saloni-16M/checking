@@ -159,6 +159,7 @@ const getAllPendingDonationsForNGO = async (req, res) => {
         .sort({ createdAt: -1 });
   
       res.status(200).json(donations);
+      console.log("✅ Pending Donations found:", donations.length);
     } catch (error) {
       console.error("Error fetching pending donations:", error);
       res.status(500).json({ message: "Server error" });

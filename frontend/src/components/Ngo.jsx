@@ -16,28 +16,42 @@ const NGO = () => {
         const token = localStorage.getItem("ngoToken");
   
         // Fetch pending donations
-        const pendingRes = await axios.get("http://localhost:5000/api/ngo/donations/pending", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setResorts(pendingRes.data || []);
+        const pendingRes =await axios.get("http://localhost:5000/api/ngo/donations/pending");
+
+
+        setResorts(pendingRes.data );
   
-        // Fetch accepted donations
-        const acceptedRes = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setAcceptedDonations(acceptedRes.data || []);
+        // // Fetch accepted donations
+        // const acceptedRes = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
+        //   headers: { Authorization: Bearer ${token} },
+        // });
+        // setAcceptedDonations(acceptedRes.data || []);
       } catch (error) {
-        console.error("Error fetching donations:", error);
-        setResorts([]);
+        console.error("Error fetching donations:", error.response?.data || error.message);        setResorts([]);
+        setAcceptedDonations([]);
+      } finally {
+        setLoading(false);
+      }
+    }; const accpetDonations = async () => {
+      try {
+        const token = localStorage.getItem("ngoToken");
+  
+   const acceptedRes = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
+          headers: { Authorization: `Bearer ${token}` },
+         });
+         setAcceptedDonations(acceptedRes.data || []);
+  
+      } catch (error) {
+        console.error("Error fetching donations:", error.response?.data || error.message);        setResorts([]);
         setAcceptedDonations([]);
       } finally {
         setLoading(false);
       }
     };
-  
+    accpetDonations();
     fetchDonations();
-  }, []);
-  
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-[#F0FAF4] p-4">
       {/* Navbar Section */}
@@ -116,9 +130,9 @@ const NGO = () => {
                   <td className="border border-black px-4 py-2">{index + 1}</td>
                   <td className="border border-black px-4 py-2">
                     {/* Show the accepted date if status is Accepted */}
-        {donation.status === "Accepted" && donation.acceptedDate
-          ? new Date(donation.acceptedDate).toLocaleDateString()
-          : "Not Accepted Yet"}
+                    {donation.status === "Accepted" && donation.acceptedDate
+                      ? new Date(donation.acceptedDate).toLocaleDateString()
+                      : "Not Accepted Yet"}
                   </td>
                   <td className="border border-black px-4 py-2">{donation.quantity}</td>
                   <td className="border border-black px-4 py-2">
